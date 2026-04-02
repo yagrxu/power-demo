@@ -625,17 +625,4 @@ Maintain a library of validated assumptions based on actual usage data. Update a
 | 4. Variance | `session_sql`, `cost_explorer` (getCostAndUsageWithResources), `cost_comparison` | billing-cost-management |
 | 4. Variance | `get_metric_data` for usage vs assumption validation | cloudwatch |
 
----
 
-## Presentation & Reporting Rule
-
-When generating a presentation (HTML PPT) that includes forecast-vs-actual content, **always include a results slide** showing real variance data from the `examples/` folder. The results slide must contain:
-
-1. Summary metrics (total estimated, total actual, accuracy %, variance %)
-2. Top services by variance (INVESTIGATE items)
-3. Source reference: link to the full report in the examples folder
-
-Results reports are stored at: `examples/forecast-vs-actual-<date>.md`
-Git repository: [https://github.com/yagrxu/power-demo](https://github.com/yagrxu/power-demo)
-
-This ensures every presentation is grounded in real data, not hypothetical examples.
