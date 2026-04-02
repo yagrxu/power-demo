@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS Cost Optimization — re:Invent Keynote</title>
+
+<!-- === GOOGLE FONTS === -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500&family=Urbanist:wght@700;800&display=swap" rel="stylesheet">
+
+<!-- === LUCIDE ICONS CDN === -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+<!-- === SPEAKER CONFIG === -->
+<script src="speaker.js"></script>
+
+<style>
+/* ============================================================
+   RE:INVENT KEYNOTE THEME — STYLE #13
+   ============================================================ */
+
+/* === CUSTOM PROPERTIES === */
+:root {
+    --bg-primary: #0A0A0A;
+    --bg-gradient: linear-gradient(135deg, #1A0033 0%, #2D0066 40%, #7C3AED 100%);
+    --accent-purple: #8B5CF6;
+    --accent-pink: #D946EF;
+    --accent-orange: #FF9900;
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --glow-purple: rgba(139, 92, 246, 0.4);
+    --card-bg: rgba(139, 92, 246, 0.08);
+    --card-border: rgba(139, 92, 246, 0.25);
+    --font-display: 'Urbanist', sans-serif;
+    --font-body: 'Albert Sans', sans-serif;
+    --title-size: clamp(2rem, 6vw, 5rem);
+    --subtitle-size: clamp(0.875rem, 1.8vw, 1.25rem);
+    --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+    --h3-size: clamp(0.85rem, 1.8vw, 1.3rem);
+    --body-size: clamp(0.7rem, 1.2vw, 1rem);
+    --small-size: clamp(0.6rem, 0.9vw, 0.8rem);
+    --slide-padding: clamp(1.5rem, 4vw, 4rem);
+    --content-gap: clamp(0.5rem, 1.5vw, 1.5rem);
+    --element-gap: clamp(0.25rem, 1vw, 1rem);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --duration-normal: 0.6s;
+}
+
+/* === VIEWPORT BASE — SCROLL-SNAP SLIDES === */
+html, body { height: 100%; overflow-x: hidden; scrollbar-width: none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+.slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; position: relative; }
+.slide-content { flex: 1; display: flex; flex-direction: column; justify-content: center; max-height: 100%; overflow: hidden; padding: var(--slide-padding); }
+.card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+.feature-list, .bullet-list { gap: clamp(0.4rem, 1vh, 1rem); }
+.feature-list li, .bullet-list li { font-size: var(--body-size); line-height: 1.4; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+@media (max-height: 700px) { :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); } }
+@media (max-height: 600px) { :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); } .nav-dots, .keyboard-hint, .decorative { display: none; } }
+@media (max-height: 500px) { :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); } }
+@media (max-width: 600px) { :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); } .grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; } html { scroll-behavior: auto; } }
+
+/* === BASE RESET === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+}
+</style>
+
+<style>
+/* === REVEAL ANIMATIONS === */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity var(--duration-normal) var(--ease-out-expo),
+                transform var(--duration-normal) var(--ease-out-expo);
+}
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.reveal.d1 { transition-delay: 0.1s; }
+.reveal.d2 { transition-delay: 0.2s; }
+.reveal.d3 { transition-delay: 0.3s; }
+.reveal.d4 { transition-delay: 0.4s; }
+.reveal.d5 { transition-delay: 0.5s; }
+.reveal.d6 { transition-delay: 0.6s; }
+.reveal.d7 { transition-delay: 0.7s; }
+
+/* === TITLE SLIDE === */
+.title-slide {
+    background: var(--bg-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+}
+.blob-canvas {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    will-change: transform;
+}
+.blob:nth-child(1) {
+    width: 40vw; height: 40vw;
+    background: var(--accent-purple);
+    top: -10%; left: -10%;
+    animation: blob1 18s ease-in-out infinite;
+}
+.blob:nth-child(2) {
+    width: 35vw; height: 35vw;
+    background: var(--accent-pink);
+    bottom: -10%; right: -10%;
+    animation: blob2 22s ease-in-out infinite;
+}
+.blob:nth-child(3) {
+    width: 25vw; height: 25vw;
+    background: var(--accent-orange);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation: blob3 20s ease-in-out infinite;
+}
+.blob:nth-child(4) {
+    width: 30vw; height: 30vw;
+    background: var(--accent-purple);
+    top: 20%; right: 20%;
+    animation: blob4 24s ease-in-out infinite;
+}
+@keyframes blob1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(10vw, 10vh) scale(1.15); }
+    66% { transform: translate(-5vw, 15vh) scale(0.9); }
+}
+@keyframes blob2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-12vw, -8vh) scale(1.1); }
+    66% { transform: translate(8vw, -12vh) scale(0.95); }
+}
+@keyframes blob3 {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    33% { transform: translate(-40%, -60%) scale(1.2); }
+    66% { transform: translate(-60%, -40%) scale(0.85); }
+}
+@keyframes blob4 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-8vw, 12vh) scale(1.1); }
+    66% { transform: translate(6vw, -6vh) scale(0.9); }
+}
+.title-label {
+    font-family: var(--font-body);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--accent-orange);
+    margin-bottom: var(--element-gap);
+    position: relative;
+    z-index: 1;
+}
+.title-main {
+    font-family: var(--font-display);
+    font-size: var(--title-size);
+    font-weight: 800;
+    line-height: 1.1;
+    position: relative;
+    z-index: 1;
+    margin-bottom: var(--element-gap);
+}
+.title-main em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.title-accent {
+    font-family: var(--font-display);
+    font-size: var(--h2-size);
+    font-weight: 700;
+    color: var(--accent-orange);
+    position: relative;
+    z-index: 1;
+    margin-bottom: var(--element-gap);
+}
+.title-sub {
+    font-family: var(--font-body);
+    font-size: var(--subtitle-size);
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* === CONTENT SLIDE LAYOUT === */
+.content-slide {
+    background: var(--bg-primary);
+    padding: var(--slide-padding);
+}
+.content-layout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--content-gap);
+    height: 100%;
+    justify-content: center;
+}
+
+/* === PILL CARDS === */
+.pill-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--element-gap);
+}
+.pill-card {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.4rem, 0.8vw, 0.75rem);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    padding: clamp(0.4rem, 0.8vw, 0.6rem) clamp(0.8rem, 1.5vw, 1.25rem);
+    font-size: var(--body-size);
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+.pill-card:hover {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: var(--accent-purple);
+}
+.pill-icon {
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    flex-shrink: 0;
+}
+.pill-text {
+    color: var(--text-primary);
+}
+
+/* === STATS ROW === */
+.stats-row {
+    display: flex;
+    gap: var(--content-gap);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.stat-item {
+    text-align: center;
+    padding: var(--element-gap);
+}
+.stat-value {
+    font-family: var(--font-display);
+    font-size: var(--h2-size);
+    font-weight: 800;
+    color: var(--accent-purple);
+    line-height: 1;
+}
+.stat-label {
+    font-size: var(--small-size);
+    color: var(--text-secondary);
+    margin-top: clamp(0.15rem, 0.4vw, 0.35rem);
+}
+</style>
+
+<style>
+/* === FEATURES GRID === */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: var(--content-gap);
+}
+.feature-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: clamp(0.5rem, 1vw, 1rem);
+    padding: clamp(0.75rem, 1.5vw, 1.5rem);
+    transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s ease;
+}
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px var(--glow-purple);
+}
+.feat-icon {
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    margin-bottom: clamp(0.3rem, 0.6vw, 0.5rem);
+    color: var(--accent-purple);
+}
+
+/* === SPLIT DIVIDER LAYOUT === */
+.split-layout {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 100%;
+}
+.split-left {
+    flex: 0 0 40%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--slide-padding);
+    text-align: right;
+}
+.split-product-name {
+    font-family: var(--font-display);
+    font-size: var(--h2-size);
+    font-weight: 800;
+    color: var(--accent-purple);
+    line-height: 1.15;
+}
+.split-product-sub {
+    font-size: var(--body-size);
+    color: var(--text-secondary);
+    margin-top: clamp(0.2rem, 0.5vw, 0.4rem);
+}
+.split-divider-line {
+    width: 2px;
+    align-self: stretch;
+    margin: var(--slide-padding) 0;
+    background: linear-gradient(180deg, transparent, var(--accent-purple), transparent);
+    flex-shrink: 0;
+}
+.split-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--slide-padding);
+}
+.split-bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.4rem, 1vh, 0.85rem);
+}
+.split-bullets li {
+    font-size: var(--body-size);
+    color: var(--text-secondary);
+    padding-left: clamp(0.75rem, 1.2vw, 1rem);
+    border-left: 2px solid var(--accent-purple);
+    line-height: 1.45;
+}
+
+/* === PIPELINE COLUMNS === */
+.pipeline-row {
+    display: flex;
+    gap: var(--content-gap);
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.pipeline-col {
+    flex: 1;
+    min-width: min(100%, 180px);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: clamp(0.5rem, 1vw, 1rem);
+    padding: clamp(0.6rem, 1.2vw, 1.25rem);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.3rem, 0.6vw, 0.5rem);
+}
+.pipeline-col-title {
+    font-family: var(--font-display);
+    font-size: var(--h3-size);
+    font-weight: 700;
+    color: var(--accent-purple);
+}
+.pipeline-bar {
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-purple), var(--accent-pink));
+    border-radius: 2px;
+}
+.pipeline-items {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.2rem, 0.4vw, 0.35rem);
+}
+.pipeline-items li {
+    font-size: var(--body-size);
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+.pipeline-footer {
+    font-size: var(--small-size);
+    color: var(--text-secondary);
+    margin-top: auto;
+    padding-top: clamp(0.3rem, 0.6vw, 0.5rem);
+    border-top: 1px solid var(--card-border);
+}
+
+/* === QUOTE SLIDE === */
+.quote-slide {
+    background: var(--bg-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.quote-mark {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 8vw, 7rem);
+    color: var(--accent-purple);
+    opacity: 0.3;
+    line-height: 1;
+    user-select: none;
+}
+.quote-text {
+    font-family: var(--font-display);
+    font-size: var(--h2-size);
+    font-weight: 700;
+    line-height: 1.3;
+    max-width: 800px;
+    margin: 0 auto;
+}
+.quote-attr {
+    font-size: var(--body-size);
+    color: var(--text-secondary);
+    margin-top: var(--element-gap);
+}
+
+/* === BIG NUMBER SLIDE === */
+.bignumber-slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: var(--bg-primary);
+}
+.bignumber {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 12vw, 10rem);
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink), var(--accent-orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.bignumber-label {
+    font-family: var(--font-display);
+    font-size: var(--h2-size);
+    font-weight: 700;
+    margin-top: var(--element-gap);
+}
+.bignumber-desc {
+    font-size: var(--body-size);
+    color: var(--text-secondary);
+    max-width: 500px;
+    margin: var(--element-gap) auto 0;
+}
+</style>
+
+<style>
+/* === COMPARISON SLIDE === */
+.compare-slide {
+    background: var(--bg-primary);
+    padding: var(--slide-padding);
+}
+.compare-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: var(--content-gap);
+}
+.compare-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: clamp(0.5rem, 1vw, 1rem);
+    padding: clamp(0.75rem, 1.5vw, 1.5rem);
+}
+.compare-card-title {
+    font-family: var(--font-display);
+    font-size: var(--h3-size);
+    font-weight: 700;
+    margin-bottom: clamp(0.3rem, 0.6vw, 0.5rem);
+    display: flex;
+    align-items: center;
+    gap: clamp(0.3rem, 0.5vw, 0.5rem);
+}
+.compare-dot {
+    width: clamp(0.5rem, 0.8vw, 0.65rem);
+    height: clamp(0.5rem, 0.8vw, 0.65rem);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.compare-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.2rem, 0.4vw, 0.35rem);
+}
+.compare-list li {
+    font-size: var(--body-size);
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* === PROCESS FLOW === */
+.process-slide {
+    background: var(--bg-primary);
+    padding: var(--slide-padding);
+}
+.process-row {
+    display: flex;
+    gap: var(--content-gap);
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+}
+.process-step {
+    flex: 1;
+    min-width: min(100%, 150px);
+    text-align: center;
+    position: relative;
+}
+.step-num {
+    font-family: var(--font-display);
+    font-size: var(--h2-size);
+    font-weight: 800;
+    color: var(--accent-purple);
+    line-height: 1;
+    margin-bottom: clamp(0.2rem, 0.4vw, 0.35rem);
+}
+.step-title {
+    font-family: var(--font-display);
+    font-size: var(--h3-size);
+    font-weight: 700;
+    margin-bottom: clamp(0.15rem, 0.3vw, 0.25rem);
+}
+.step-desc {
+    font-size: var(--small-size);
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* === TIMELINE === */
+.timeline {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+    width: 100%;
+    position: relative;
+}
+.timeline > div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+.tl-top, .tl-bot {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(0.3rem, 0.6vw, 0.5rem);
+}
+.tl-mid {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    height: clamp(2rem, 3vw, 3rem);
+    width: 100%;
+}
+.tl-dot {
+    width: clamp(0.6rem, 1vw, 0.85rem);
+    height: clamp(0.6rem, 1vw, 0.85rem);
+    border-radius: 50%;
+    background: var(--accent-purple);
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 0 12px var(--glow-purple);
+}
+.tl-mid::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--card-border);
+    z-index: 1;
+}
+.tl-stem-up, .tl-stem-down {
+    width: 2px;
+    background: var(--card-border);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.tl-stem-up {
+    bottom: 100%;
+    height: clamp(0.75rem, 1.5vw, 1.25rem);
+}
+.tl-stem-down {
+    top: 100%;
+    height: clamp(0.75rem, 1.5vw, 1.25rem);
+}
+.tl-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: clamp(0.35rem, 0.7vw, 0.6rem);
+    padding: clamp(0.35rem, 0.7vw, 0.6rem);
+    text-align: center;
+    width: 100%;
+}
+.tl-year {
+    font-family: var(--font-display);
+    font-size: var(--h3-size);
+    font-weight: 700;
+    color: var(--accent-purple);
+}
+.tl-desc {
+    font-size: var(--small-size);
+    color: var(--text-secondary);
+    line-height: 1.35;
+}
+.tl-col1 { flex: 1; }
+.tl-col2 { flex: 1; }
+.tl-col3 { flex: 1; }
+.tl-col4 { flex: 1; }
+.tl-col5 { flex: 1; }
+
+/* === FLOATING ORBS (DECORATIVE) === */
+.floating-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+}
+.orb-purple {
+    background: var(--accent-purple);
+    animation: orbFloat1 16s ease-in-out infinite;
+}
+.orb-pink {
+    background: var(--accent-pink);
+    animation: orbFloat2 20s ease-in-out infinite;
+}
+.orb-blue {
+    background: #3B82F6;
+    animation: orbFloat3 18s ease-in-out infinite;
+}
+@keyframes orbFloat1 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(20px, -30px); }
+}
+@keyframes orbFloat2 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-25px, 20px); }
+}
+@keyframes orbFloat3 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(15px, 25px); }
+}
+
+/* === SECTION LABELS === */
+.section-label {
+    font-family: var(--font-body);
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--accent-orange);
+    margin-bottom: clamp(0.2rem, 0.5vw, 0.4rem);
+}
+.section-title {
+    font-family: var(--font-display);
+    font-size: var(--h2-size);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: clamp(0.2rem, 0.5vw, 0.4rem);
+}
+.section-desc {
+    font-size: var(--body-size);
+    color: var(--text-secondary);
+    max-width: 700px;
+    line-height: 1.5;
+}
+</style>
+
+<style>
+/* === THEMED TABLE === */
+.slide-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--body-size);
+}
+.slide-table th {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--h3-size);
+    text-align: left;
+    padding: clamp(0.4rem, 0.8vw, 0.75rem) clamp(0.5rem, 1vw, 1rem);
+    border-bottom: 2px solid var(--accent-purple);
+    color: var(--text-primary);
+}
+.slide-table td {
+    padding: clamp(0.35rem, 0.7vw, 0.65rem) clamp(0.5rem, 1vw, 1rem);
+    border-bottom: 1px solid var(--card-border);
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+.slide-table tr:hover td {
+    background: var(--card-bg);
+    color: var(--text-primary);
+}
+
+/* === SLIDE FOOTER === */
+.slide-footer {
+    position: fixed;
+    bottom: clamp(0.5rem, 1vh, 1rem);
+    left: var(--slide-padding);
+    font-size: var(--small-size);
+    color: var(--text-secondary);
+    opacity: 0.5;
+    z-index: 100;
+    pointer-events: none;
+}
+
+/* === PAGE NUMBER === */
+.page-number {
+    position: fixed;
+    bottom: clamp(0.5rem, 1vh, 1rem);
+    right: var(--slide-padding);
+    font-family: var(--font-body);
+    font-size: var(--small-size);
+    color: var(--text-secondary);
+    opacity: 0.5;
+    z-index: 100;
+    pointer-events: none;
+}
+
+/* === NAV DOTS === */
+.nav-dots {
+    position: fixed;
+    right: clamp(0.4rem, 0.8vw, 0.75rem);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.3rem, 0.5vw, 0.5rem);
+    z-index: 200;
+}
+.nav-dot {
+    width: clamp(0.35rem, 0.6vw, 0.5rem);
+    height: clamp(0.35rem, 0.6vw, 0.5rem);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+    border: none;
+    padding: 0;
+}
+.nav-dot:hover {
+    background: rgba(255, 255, 255, 0.5);
+    transform: scale(1.4);
+}
+.nav-dot.active {
+    background: var(--accent-purple);
+    transform: scale(1.5);
+    box-shadow: 0 0 8px var(--glow-purple);
+}
+
+/* === SPEAKER INFO === */
+.speaker-info {
+    font-size: var(--small-size);
+    color: var(--text-secondary);
+    position: relative;
+    z-index: 1;
+    margin-top: var(--element-gap);
+}
+
+/* === FEATURE ICON (LUCIDE) === */
+.feature-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-purple);
+    margin-bottom: clamp(0.2rem, 0.4vw, 0.35rem);
+}
+.feature-icon svg {
+    width: clamp(1.25rem, 2vw, 1.75rem);
+    height: clamp(1.25rem, 2vw, 1.75rem);
+    stroke-width: 1.5;
+}
+</style>
+
+</head>
+<body>
+
+<!-- === NAV DOTS CONTAINER === -->
+<nav class="nav-dots" id="navDots"></nav>
+
+<!-- === SLIDE FOOTER === -->
+<div class="slide-footer">&copy; 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+
+<!-- === PAGE NUMBER === -->
+<div class="page-number" id="pageNumber">1</div>
+<!-- ============================================================
+     SLIDE 1 — TITLE
+     ============================================================ -->
+<section class="slide title-slide">
+    <div class="blob-canvas">
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+    </div>
+    <div class="slide-content" style="align-items:center;text-align:center;">
+        <p class="title-label reveal d1">AWS COST OPTIMIZATION POWER</p>
+        <h1 class="title-main reveal d2">Estimate. Deploy.<br><em>Track. Optimize.</em></h1>
+        <div class="title-accent reveal d3" style="width:clamp(40px,5vw,56px);height:3px;background:linear-gradient(90deg,var(--accent-orange),var(--accent-pink));border-radius:2px;margin:0 auto;"></div>
+        <p class="title-sub reveal d4">One power, three MCP servers, complete cost lifecycle coverage.</p>
+        <p class="speaker-info reveal d5" id="speakerInfo"></p>
+    </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 2 — WHY THIS POWER MATTERS
+     ============================================================ -->
+<section class="slide content-slide">
+    <div class="floating-orb orb-purple" style="width:220px;height:220px;top:-60px;right:-40px;"></div>
+    <div class="floating-orb orb-pink" style="width:160px;height:160px;bottom:40px;left:-30px;"></div>
+    <div class="slide-content">
+        <div class="content-layout">
+            <p class="section-label reveal d1">THE CHALLENGE</p>
+            <h2 class="section-title reveal d2">Why This Power Matters</h2>
+            <div style="display:flex;gap:var(--content-gap);flex-wrap:wrap;align-items:flex-start;">
+                <div style="flex:1;min-width:min(100%,260px);">
+                    <p class="section-desc reveal d3">Cloud cost is the #1 concern for engineering leaders. Yet cost decisions are scattered across disconnected tools, making it nearly impossible to build a culture of cost-aware development.</p>
+                </div>
+                <div style="flex:1;min-width:min(100%,260px);">
+                    <div class="pill-cards" style="flex-direction:column;">
+                        <div class="pill-card reveal d3">
+                            <span class="pill-icon"><i data-lucide="monitor"></i></span>
+                            <span class="pill-text">Cost decisions happen in the Console, disconnected from code</span>
+                        </div>
+                        <div class="pill-card reveal d4">
+                            <span class="pill-icon"><i data-lucide="file-spreadsheet"></i></span>
+                            <span class="pill-text">Estimates live in spreadsheets, never validated</span>
+                        </div>
+                        <div class="pill-card reveal d5">
+                            <span class="pill-icon"><i data-lucide="alert-triangle"></i></span>
+                            <span class="pill-text">Optimization recommendations aren't surfaced where devs work</span>
+                        </div>
+                        <div class="pill-card reveal d6">
+                            <span class="pill-icon"><i data-lucide="message-square-off"></i></span>
+                            <span class="pill-text">FinOps and engineering speak different languages</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 3 — VALUE PROPOSITION
+     ============================================================ -->
+<section class="slide content-slide">
+    <div class="floating-orb orb-blue" style="width:200px;height:200px;top:30px;left:-50px;"></div>
+    <div class="floating-orb orb-purple" style="width:140px;height:140px;bottom:-30px;right:60px;"></div>
+    <div class="slide-content">
+        <div class="content-layout">
+            <p class="section-label reveal d1">VALUE</p>
+            <h2 class="section-title reveal d2">Who Benefits</h2>
+            <div class="features-grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));">
+                <div class="feature-card reveal d3">
+                    <div class="feat-icon"><i data-lucide="code"></i></div>
+                    <h3 style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">Developers</h3>
+                    <p style="font-size:var(--body-size);color:var(--text-secondary);margin-top:0.25rem;">Know what your code costs before you deploy</p>
+                </div>
+                <div class="feature-card reveal d4">
+                    <div class="feat-icon"><i data-lucide="server"></i></div>
+                    <h3 style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">Platform Engineers</h3>
+                    <p style="font-size:var(--body-size);color:var(--text-secondary);margin-top:0.25rem;">Rightsizing and optimization at your fingertips</p>
+                </div>
+                <div class="feature-card reveal d5">
+                    <div class="feat-icon"><i data-lucide="coins"></i></div>
+                    <h3 style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">FinOps Teams</h3>
+                    <p style="font-size:var(--body-size);color:var(--text-secondary);margin-top:0.25rem;">Budget monitoring and chargeback from natural language</p>
+                </div>
+                <div class="feature-card reveal d6">
+                    <div class="feat-icon"><i data-lucide="layers"></i></div>
+                    <h3 style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">Architects</h3>
+                    <p style="font-size:var(--body-size);color:var(--text-secondary);margin-top:0.25rem;">Compare pricing across regions in seconds</p>
+                </div>
+                <div class="feature-card reveal d7">
+                    <div class="feat-icon"><i data-lucide="briefcase"></i></div>
+                    <h3 style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">Engineering Managers</h3>
+                    <p style="font-size:var(--body-size);color:var(--text-secondary);margin-top:0.25rem;">Track team spend and measure cost efficiency</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 4 — COST OPTIMIZATION DOMAIN
+     ============================================================ -->
+<section class="slide content-slide">
+    <div class="floating-orb orb-pink" style="width:180px;height:180px;top:-40px;left:20%;"></div>
+    <div class="floating-orb orb-blue" style="width:130px;height:130px;bottom:20px;right:-20px;"></div>
+    <div class="slide-content">
+        <div class="content-layout">
+            <p class="section-label reveal d1">WELL-ARCHITECTED</p>
+            <h2 class="section-title reveal d2">The Cost Optimization Domain</h2>
+            <p class="section-desc reveal d3">Built on the AWS Well-Architected Cost Optimization Pillar's five design principles</p>
+            <div class="pipeline-row reveal d4">
+                <div class="pipeline-col">
+                    <div class="pipeline-col-title">Financial Management</div>
+                    <div class="pipeline-bar" style="background:linear-gradient(90deg,#3B82F6,#6366F1);"></div>
+                    <ul class="pipeline-items">
+                        <li>Budget governance</li>
+                        <li>Anomaly detection</li>
+                    </ul>
+                </div>
+                <div class="pipeline-col">
+                    <div class="pipeline-col-title">Consumption Model</div>
+                    <div class="pipeline-bar" style="background:linear-gradient(90deg,#6366F1,#7C3AED);"></div>
+                    <ul class="pipeline-items">
+                        <li>Rightsizing</li>
+                        <li>Serverless adoption</li>
+                    </ul>
+                </div>
+                <div class="pipeline-col">
+                    <div class="pipeline-col-title">Efficiency</div>
+                    <div class="pipeline-bar" style="background:linear-gradient(90deg,#7C3AED,#8B5CF6);"></div>
+                    <ul class="pipeline-items">
+                        <li>Cost per outcome</li>
+                        <li>Utilization ROI</li>
+                    </ul>
+                </div>
+                <div class="pipeline-col">
+                    <div class="pipeline-col-title">Managed Services</div>
+                    <div class="pipeline-bar" style="background:linear-gradient(90deg,#8B5CF6,#A855F7);"></div>
+                    <ul class="pipeline-items">
+                        <li>TCO analysis</li>
+                        <li>Migration planning</li>
+                    </ul>
+                </div>
+                <div class="pipeline-col">
+                    <div class="pipeline-col-title">Attribution</div>
+                    <div class="pipeline-bar" style="background:linear-gradient(90deg,#A855F7,#D946EF);"></div>
+                    <ul class="pipeline-items">
+                        <li>Tagging strategy</li>
+                        <li>Chargeback / showback</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pipeline-footer reveal d5" style="text-align:center;background:var(--card-bg);border:1px solid var(--card-border);border-radius:clamp(0.35rem,0.7vw,0.6rem);padding:clamp(0.4rem,0.8vw,0.6rem) clamp(0.8rem,1.5vw,1.25rem);">
+                <span style="color:var(--accent-orange);font-weight:700;">+ NEW:</span> Forecast vs Actual — Estimate → Deploy → Track → Compare → Learn
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 5 — CURRENT SCENARIOS (TABLE)
+     ============================================================ -->
+<section class="slide content-slide">
+    <div class="floating-orb orb-purple" style="width:170px;height:170px;bottom:-50px;left:10%;"></div>
+    <div class="floating-orb orb-pink" style="width:120px;height:120px;top:20px;right:5%;"></div>
+    <div class="slide-content">
+        <div class="content-layout">
+            <p class="section-label reveal d1">CURRENT SCOPE</p>
+            <h2 class="section-title reveal d2">Scenarios Addressed Today</h2>
+            <div class="reveal d3" style="overflow-x:auto;">
+                <table class="slide-table">
+                    <thead>
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Tools</th>
+                            <th>Steering File</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>What are we spending?</td>
+                            <td><code style="color:var(--accent-purple);">cost_explorer</code></td>
+                            <td>cloud-financial-management</td>
+                        </tr>
+                        <tr>
+                            <td>Where can we save?</td>
+                            <td><code style="color:var(--accent-purple);">cost_optimization</code>, <code style="color:var(--accent-purple);">compute_optimizer</code></td>
+                            <td>consumption-model</td>
+                        </tr>
+                        <tr>
+                            <td>How much will this cost?</td>
+                            <td><code style="color:var(--accent-purple);">get_pricing</code>, <code style="color:var(--accent-purple);">analyze_cdk_project</code></td>
+                            <td>developer-cost-optimization</td>
+                        </tr>
+                        <tr>
+                            <td>Are RIs / SPs efficient?</td>
+                            <td><code style="color:var(--accent-purple);">ri_performance</code>, <code style="color:var(--accent-purple);">sp_performance</code></td>
+                            <td>consumption-model</td>
+                        </tr>
+                        <tr>
+                            <td>Who's spending what?</td>
+                            <td><code style="color:var(--accent-purple);">cost_explorer</code> (tags)</td>
+                            <td>expenditure-attribution</td>
+                        </tr>
+                        <tr>
+                            <td>Estimate vs actual?</td>
+                            <td><code style="color:var(--accent-purple);">get_pricing</code> + <code style="color:var(--accent-purple);">cost_explorer</code> + <code style="color:var(--accent-purple);">session_sql</code></td>
+                            <td><span style="color:var(--accent-orange);font-weight:700;">forecast-vs-actual (NEW)</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 6 — SERVICE COVERAGE
+     ============================================================ -->
+<section class="slide content-slide">
+    <div class="floating-orb orb-blue" style="width:190px;height:190px;top:-30px;right:-40px;"></div>
+    <div class="floating-orb orb-purple" style="width:150px;height:150px;bottom:-20px;left:15%;"></div>
+    <div class="slide-content">
+        <div class="content-layout">
+            <p class="section-label reveal d1">20+ SERVICE GUIDES</p>
+            <h2 class="section-title reveal d2">Deep Service Coverage</h2>
+            <div class="features-grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));">
+                <div class="feature-card reveal d3">
+                    <div class="feat-icon"><i data-lucide="cpu"></i></div>
+                    <h3 style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">Compute (5)</h3>
+                    <p style="font-size:var(--body-size);color:var(--text-secondary);margin-top:0.25rem;">EC2, Lambda, Containers, AMD, Graviton</p>
+                </div>
+                <div class="feature-card reveal d4">
+                    <div class="feat-icon"><i data-lucide="brain"></i></div>
+                    <h3 style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">AI/ML (4)</h3>
+                    <p style="font-size:var(--body-size);color:var(--text-secondary);margin-top:0.25rem;">Bedrock, Agents, SageMaker, AI Workloads</p>
+                </div>
+                <div class="feature-card reveal d5">
+                    <div class="feat-icon"><i data-lucide="database"></i></div>
+                    <h3 style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">Database (4)</h3>
+                    <p style="font-size:var(--body-size);color:var(--text-secondary);margin-top:0.25rem;">RDS/Aurora, DynamoDB, Redshift, OpenSearch</p>
+                </div>
+                <div class="feature-card reveal d6">
+                    <div class="feat-icon"><i data-lucide="hard-drive"></i></div>
+                    <h3 style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">Storage (2)</h3>
+                    <p style="font-size:var(--body-size);color:var(--text-secondary);margin-top:0.25rem;">S3/EBS/EFS, FSx NetApp ONTAP</p>
+                </div>
+                <div class="feature-card reveal d7">
+                    <div class="feat-icon"><i data-lucide="globe"></i></div>
+                    <h3 style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">Networking (1)</h3>
+                    <p style="font-size:var(--body-size);color:var(--text-secondary);margin-top:0.25rem;">VPC, Load Balancers, CloudFront</p>
+                </div>
+                <div class="feature-card reveal d7">
+                    <div class="feat-icon"><i data-lucide="shield"></i></div>
+                    <h3 style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">Security (2)</h3>
+                    <p style="font-size:var(--body-size);color:var(--text-secondary);margin-top:0.25rem;">KMS/GuardDuty, CloudTrail</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ============================================================
+     SLIDE 7 — Architecture (Split Divider)
+     ============================================================ -->
+<section class="slide content-slide">
+    <div class="floating-orb orb-purple" style="width:280px;height:280px;top:-60px;right:-40px;"></div>
+    <div class="floating-orb orb-pink" style="width:200px;height:200px;bottom:10%;left:-50px;"></div>
+    <div class="split-layout">
+        <div class="split-left">
+            <div class="section-label reveal d1">ARCHITECTURE</div>
+            <div class="split-product-name reveal d2">Three MCP Servers</div>
+            <div class="split-product-sub reveal d3">One Power</div>
+        </div>
+        <div class="split-divider-line"></div>
+        <div class="split-right">
+            <ul class="split-bullets">
+                <li class="reveal d3"><strong>AWS Pricing MCP</strong> — Unit costs, IaC analysis, cost reports (Estimate)</li>
+                <li class="reveal d4"><strong>Billing &amp; Cost Management MCP</strong> — Cost Explorer, forecasts, anomalies, session SQL (Track &amp; Compare)</li>
+                <li class="reveal d5"><strong>CloudWatch MCP</strong> — Usage metrics for cost-performance correlation (Validate)</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 8 — The Gap (Divider Slide)
+     ============================================================ -->
+<section class="slide title-slide">
+    <div class="blob-canvas">
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+    </div>
+    <div class="floating-orb orb-blue" style="width:180px;height:180px;top:15%;left:10%;"></div>
+    <div class="floating-orb orb-purple" style="width:240px;height:240px;bottom:8%;right:5%;"></div>
+    <div class="slide-content" style="align-items:center;text-align:center;">
+        <div class="title-label reveal d1">THE INSIGHT</div>
+        <h2 class="title-main reveal d2">The Gap Wasn't <em>in the Tools</em></h2>
+        <p class="title-sub reveal d3">It was in the workflow. No steering file connected the Pricing MCP's estimates with the Billing MCP's actuals.</p>
+    </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 9 — Four-Phase Workflow (Process Flow)
+     ============================================================ -->
+<section class="slide process-slide">
+    <div class="floating-orb orb-pink" style="width:220px;height:220px;top:-40px;left:15%;"></div>
+    <div class="floating-orb orb-blue" style="width:160px;height:160px;bottom:5%;right:10%;"></div>
+    <div class="slide-content">
+        <div class="content-layout">
+            <div class="section-label reveal d1">WORKFLOW</div>
+            <div class="section-title reveal d2">Estimate → Deploy → Track → Compare</div>
+            <div class="process-row">
+                <div class="process-step reveal d3">
+                    <div class="step-num">01</div>
+                    <div class="step-title">Estimate</div>
+                    <div class="step-desc">Analyze IaC, query pricing, document assumptions</div>
+                </div>
+                <div class="process-step reveal d4">
+                    <div class="step-num">02</div>
+                    <div class="step-title">Deploy</div>
+                    <div class="step-desc">Tag resources with CostEstimateId</div>
+                </div>
+                <div class="process-step reveal d5">
+                    <div class="step-num">03</div>
+                    <div class="step-title">Track</div>
+                    <div class="step-desc">Pull actual spend, ML forecast, anomalies</div>
+                </div>
+                <div class="process-step reveal d6">
+                    <div class="step-num">04</div>
+                    <div class="step-title">Compare</div>
+                    <div class="step-desc">Join estimates with actuals, calculate variance</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 10 — Live Test Results (Stats + Table)
+     ============================================================ -->
+<section class="slide content-slide">
+    <div class="floating-orb orb-purple" style="width:260px;height:260px;top:5%;right:-60px;"></div>
+    <div class="floating-orb orb-pink" style="width:180px;height:180px;bottom:-30px;left:20%;"></div>
+    <div class="slide-content">
+        <div class="content-layout">
+            <div class="section-label reveal d1">LIVE VALIDATION</div>
+            <div class="section-title reveal d2">Variance Results — Real Data</div>
+            <div class="stats-row reveal d3">
+                <div class="stat-item">
+                    <div class="stat-value">$2,300</div>
+                    <div class="stat-label">Estimated</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">$2,388</div>
+                    <div class="stat-label">Actual</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">96.3%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+            </div>
+            <table class="slide-table reveal d4">
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Estimated</th>
+                        <th>Actual</th>
+                        <th>Variance</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>OpenSearch</td>
+                        <td>$1,100</td>
+                        <td>$1,163</td>
+                        <td>+5.7%</td>
+                        <td><i data-lucide="check-circle" style="width:1em;height:1em;color:var(--accent-purple);vertical-align:middle;"></i> OK</td>
+                    </tr>
+                    <tr>
+                        <td>CloudWatch</td>
+                        <td>$500</td>
+                        <td>$520</td>
+                        <td>+4.0%</td>
+                        <td><i data-lucide="check-circle" style="width:1em;height:1em;color:var(--accent-purple);vertical-align:middle;"></i> OK</td>
+                    </tr>
+                    <tr>
+                        <td>EC2 Compute</td>
+                        <td>$700</td>
+                        <td>$705</td>
+                        <td>+0.7%</td>
+                        <td><i data-lucide="check-circle" style="width:1em;height:1em;color:var(--accent-purple);vertical-align:middle;"></i> OK</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 11 — Variance Patterns (Features Grid, 5 cards)
+     ============================================================ -->
+<section class="slide content-slide">
+    <div class="floating-orb orb-blue" style="width:200px;height:200px;top:10%;left:-50px;"></div>
+    <div class="floating-orb orb-purple" style="width:240px;height:240px;bottom:-40px;right:15%;"></div>
+    <div class="slide-content">
+        <div class="content-layout">
+            <div class="section-label reveal d1">PATTERNS</div>
+            <div class="section-title reveal d2">Common Variance Patterns</div>
+            <div class="features-grid" style="grid-template-columns:repeat(5,1fr);">
+                <div class="feature-card reveal d3">
+                    <div class="feat-icon"><i data-lucide="trending-up"></i></div>
+                    <div style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">Traffic Exceeded</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.25rem;">Usage volume underestimated</div>
+                </div>
+                <div class="feature-card reveal d4">
+                    <div class="feat-icon"><i data-lucide="arrow-right-left"></i></div>
+                    <div style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">Data Transfer Missed</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.25rem;">Egress not in estimate</div>
+                </div>
+                <div class="feature-card reveal d5">
+                    <div class="feat-icon"><i data-lucide="tag"></i></div>
+                    <div style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">RI/SP Gap</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.25rem;">Commitments not factored in</div>
+                </div>
+                <div class="feature-card reveal d6">
+                    <div class="feat-icon"><i data-lucide="database"></i></div>
+                    <div style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">Storage Growth</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.25rem;">Accumulation rate underestimated</div>
+                </div>
+                <div class="feature-card reveal d7">
+                    <div class="feat-icon"><i data-lucide="gift"></i></div>
+                    <div style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">Free Tier Expired</div>
+                    <div style="font-size:var(--small-size);color:var(--text-secondary);margin-top:0.25rem;">Benefits assumed permanently</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 12 — Feedback Loop (Comparison Split, 2 cards)
+     ============================================================ -->
+<section class="slide compare-slide">
+    <div class="floating-orb orb-pink" style="width:220px;height:220px;top:-30px;right:20%;"></div>
+    <div class="floating-orb orb-blue" style="width:180px;height:180px;bottom:10%;left:-40px;"></div>
+    <div class="slide-content">
+        <div class="content-layout">
+            <div class="section-label reveal d1">CONTINUOUS IMPROVEMENT</div>
+            <div class="section-title reveal d2">The Feedback Loop</div>
+            <div class="compare-grid">
+                <div class="compare-card reveal d3">
+                    <div class="compare-card-title">
+                        <span class="compare-dot" style="background:var(--accent-purple);"></span>
+                        Monthly Review
+                    </div>
+                    <ul class="compare-list">
+                        <li>Pull actuals for all projects</li>
+                        <li>Flag &gt;25% deviations</li>
+                        <li>Correlate with CloudWatch metrics</li>
+                        <li>Update assumption library</li>
+                    </ul>
+                </div>
+                <div class="compare-card reveal d4">
+                    <div class="compare-card-title">
+                        <span class="compare-dot" style="background:var(--accent-pink);"></span>
+                        Accuracy Targets
+                    </div>
+                    <ul class="compare-list">
+                        <li>Starting: &gt;50% (±50-100%)</li>
+                        <li>Developing: &gt;70% (±20-50%)</li>
+                        <li>Mature: &gt;85% (±10-20%)</li>
+                        <li>Advanced: &gt;90% (±5-10%)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ============================================================
+     SLIDE 13 — WHAT WE BUILT
+     ============================================================ -->
+<section class="slide content-slide">
+    <div class="floating-orb orb-purple" style="width:200px;height:200px;top:-50px;right:-30px;"></div>
+    <div class="floating-orb orb-pink" style="width:150px;height:150px;bottom:30px;left:-40px;"></div>
+    <div class="slide-content">
+        <div class="content-layout">
+            <p class="section-label reveal d1">DELIVERABLES</p>
+            <h2 class="section-title reveal d2">What We Built</h2>
+            <table class="slide-table reveal d3">
+                <thead>
+                    <tr>
+                        <th>Artifact</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code style="color:var(--accent-purple);">forecast-vs-actual.md</code></td>
+                        <td>New steering file — full 4-phase workflow</td>
+                    </tr>
+                    <tr>
+                        <td><code style="color:var(--accent-purple);">POWER.md</code> updates</td>
+                        <td>Added steering reference + 4 new keywords</td>
+                    </tr>
+                    <tr>
+                        <td><code style="color:var(--accent-purple);">tool-selection-guide.md</code></td>
+                        <td>Added query patterns + workflow combination</td>
+                    </tr>
+                    <tr>
+                        <td>Test report</td>
+                        <td>Validation report with live test results</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="reveal d4" style="font-size:var(--small-size);color:var(--accent-orange);margin-top:var(--element-gap);">
+                <i data-lucide="info" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>
+                Key finding: No new MCP servers required.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 14 — LONG-TERM ROADMAP
+     ============================================================ -->
+<section class="slide content-slide">
+    <div class="floating-orb orb-blue" style="width:180px;height:180px;top:20px;left:-40px;"></div>
+    <div class="floating-orb orb-purple" style="width:160px;height:160px;bottom:-30px;right:50px;"></div>
+    <div class="slide-content">
+        <div class="content-layout">
+            <p class="section-label reveal d1">ROADMAP</p>
+            <h2 class="section-title reveal d2">Long-Term Vision</h2>
+            <div class="features-grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));">
+                <div class="feature-card reveal d3">
+                    <div class="feat-icon"><i data-lucide="check-circle"></i></div>
+                    <h3 style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">Phase 1: Foundation</h3>
+                    <p style="font-size:var(--small-size);color:var(--accent-orange);margin-top:0.15rem;">Delivered</p>
+                    <p style="font-size:var(--body-size);color:var(--text-secondary);margin-top:0.25rem;">3 MCPs, 8 steering files, 20+ service guides</p>
+                </div>
+                <div class="feature-card reveal d4">
+                    <div class="feat-icon"><i data-lucide="git-branch"></i></div>
+                    <h3 style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">Phase 2: Deeper Integration</h3>
+                    <p style="font-size:var(--body-size);color:var(--text-secondary);margin-top:0.25rem;">CI/CD cost gates, multi-account, SP/RI what-if</p>
+                </div>
+                <div class="feature-card reveal d5">
+                    <div class="feat-icon"><i data-lucide="brain"></i></div>
+                    <h3 style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">Phase 3: Intelligence</h3>
+                    <p style="font-size:var(--body-size);color:var(--text-secondary);margin-top:0.25rem;">Accuracy scoring, trend prediction, auto-rightsizing</p>
+                </div>
+                <div class="feature-card reveal d6">
+                    <div class="feat-icon"><i data-lucide="rocket"></i></div>
+                    <h3 style="font-family:var(--font-display);font-size:var(--h3-size);font-weight:700;">Phase 4: Platform</h3>
+                    <p style="font-size:var(--body-size);color:var(--text-secondary);margin-top:0.25rem;">Cross-power orchestration, FinOps-as-Code, team dashboards</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 15 — POTENTIAL EXPANSIONS
+     ============================================================ -->
+<section class="slide content-slide">
+    <div class="floating-orb orb-pink" style="width:190px;height:190px;top:-40px;left:-30px;"></div>
+    <div class="floating-orb orb-blue" style="width:140px;height:140px;bottom:20px;right:-20px;"></div>
+    <div class="slide-content">
+        <div class="content-layout">
+            <p class="section-label reveal d1">FUTURE</p>
+            <h2 class="section-title reveal d2">Potential New Capabilities</h2>
+            <table class="slide-table reveal d3">
+                <thead>
+                    <tr>
+                        <th>Capability</th>
+                        <th>What It Enables</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AWS Resource Explorer MCP</td>
+                        <td>Discover resources across accounts for tagging audit</td>
+                    </tr>
+                    <tr>
+                        <td>AWS Organizations MCP</td>
+                        <td>Multi-account cost consolidation</td>
+                    </tr>
+                    <tr>
+                        <td>CI/CD Cost Gates steering</td>
+                        <td>Reject deployments exceeding cost thresholds</td>
+                    </tr>
+                    <tr>
+                        <td>Savings Plans Advisor steering</td>
+                        <td>SP/RI purchase modeling with what-if analysis</td>
+                    </tr>
+                    <tr>
+                        <td>Cost Anomaly Response steering</td>
+                        <td>Anomaly → investigation → remediation workflow</td>
+                    </tr>
+                    <tr>
+                        <td>Data Transfer Optimization steering</td>
+                        <td>Inter-region and egress cost reduction</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 16 — KEY TAKEAWAY
+     ============================================================ -->
+<section class="slide quote-slide">
+    <div class="floating-orb orb-purple" style="width:250px;height:250px;top:-60px;left:-50px;"></div>
+    <div class="floating-orb orb-pink" style="width:200px;height:200px;bottom:-40px;right:-30px;"></div>
+    <div class="slide-content" style="align-items:center;text-align:center;">
+        <div class="quote-mark reveal d1">"</div>
+        <p class="quote-text reveal d2">The gap was never in the tools.<br>It was in connecting them.</p>
+        <p class="quote-attr reveal d3">Estimate → Deploy → Track → Compare → Learn → Repeat</p>
+    </div>
+</section>
+
+<!-- ============================================================
+     SLIDE 17 — CLOSING TITLE
+     ============================================================ -->
+<section class="slide title-slide">
+    <div class="blob-canvas">
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+    </div>
+    <div class="slide-content" style="align-items:center;text-align:center;">
+        <p class="title-label reveal d1">AWS COST OPTIMIZATION POWER</p>
+        <h1 class="title-main reveal d2">Thank You</h1>
+        <div class="reveal d3" style="width:clamp(40px,5vw,56px);height:3px;background:linear-gradient(90deg,var(--accent-orange),var(--accent-pink));border-radius:2px;margin:0 auto;"></div>
+        <p class="title-sub reveal d4">Estimate. Deploy. Track. Optimize.</p>
+        <p class="speaker-info reveal d5" id="speakerInfoClose"></p>
+    </div>
+</section>
+<!-- === SLIDE PRESENTATION ENGINE === -->
+<script>
+class SlidePresentation {
+    constructor() {
+        this.slides = [];
+        this.currentIndex = 0;
+        this.isScrolling = false;
+        this.wheelTimeout = null;
+        this.touchStartY = 0;
+        this.touchStartX = 0;
+        this.init();
+    }
+
+    init() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        if (!this.slides.length) return;
+
+        this.setupIntersectionObserver();
+        this.setupKeyboardNav();
+        this.setupTouchNav();
+        this.setupWheelNav();
+        this.generateNavDots();
+        this.updatePageNumber();
+        this.injectSpeakerInfo();
+    }
+
+    /* --- Intersection Observer for .visible class --- */
+    setupIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const idx = this.slides.indexOf(entry.target);
+                    if (idx !== -1) this.currentIndex = idx;
+
+                    entry.target.querySelectorAll('.reveal').forEach(el => {
+                        el.classList.add('visible');
+                    });
+
+                    this.updateNavDots();
+                    this.updatePageNumber();
+                } else {
+                    entry.target.querySelectorAll('.reveal').forEach(el => {
+                        el.classList.remove('visible');
+                    });
+                }
+            });
+        }, { threshold: 0.5 });
+
+        this.slides.forEach(slide => observer.observe(slide));
+    }
+
+    /* --- Keyboard Navigation --- */
+    setupKeyboardNav() {
+        document.addEventListener('keydown', (e) => {
+            switch (e.key) {
+                case 'ArrowDown':
+                case 'ArrowRight':
+                case ' ':
+                case 'PageDown':
+                    e.preventDefault();
+                    this.goToSlide(this.currentIndex + 1);
+                    break;
+                case 'ArrowUp':
+                case 'ArrowLeft':
+                case 'PageUp':
+                    e.preventDefault();
+                    this.goToSlide(this.currentIndex - 1);
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    this.goToSlide(0);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    this.goToSlide(this.slides.length - 1);
+                    break;
+            }
+        });
+    }
+
+    /* --- Touch / Swipe Support --- */
+    setupTouchNav() {
+        document.addEventListener('touchstart', (e) => {
+            this.touchStartY = e.touches[0].clientY;
+            this.touchStartX = e.touches[0].clientX;
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+            const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+
+            /* Only act on vertical swipes that exceed threshold */
+            if (Math.abs(deltaY) > 50 && Math.abs(deltaY) > Math.abs(deltaX)) {
+                if (deltaY > 0) {
+                    this.goToSlide(this.currentIndex + 1);
+                } else {
+                    this.goToSlide(this.currentIndex - 1);
+                }
+            }
+        }, { passive: true });
+    }
+
+    /* --- Mouse Wheel Navigation with Debounce --- */
+    setupWheelNav() {
+        document.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (this.isScrolling) return;
+
+            this.isScrolling = true;
+            if (e.deltaY > 0) {
+                this.goToSlide(this.currentIndex + 1);
+            } else {
+                this.goToSlide(this.currentIndex - 1);
+            }
+
+            clearTimeout(this.wheelTimeout);
+            this.wheelTimeout = setTimeout(() => {
+                this.isScrolling = false;
+            }, 800);
+        }, { passive: false });
+    }
+
+    /* --- Navigate to Slide --- */
+    goToSlide(index) {
+        const target = Math.max(0, Math.min(index, this.slides.length - 1));
+        if (target === this.currentIndex) return;
+
+        this.currentIndex = target;
+        this.slides[target].scrollIntoView({ behavior: 'smooth' });
+        this.updateNavDots();
+        this.updatePageNumber();
+    }
+
+    /* --- Generate Nav Dots --- */
+    generateNavDots() {
+        const nav = document.getElementById('navDots');
+        if (!nav) return;
+
+        nav.innerHTML = '';
+        this.slides.forEach((_, i) => {
+            const dot = document.createElement('button');
+            dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+            dot.addEventListener('click', () => this.goToSlide(i));
+            nav.appendChild(dot);
+        });
+    }
+
+    /* --- Update Nav Dots --- */
+    updateNavDots() {
+        const dots = document.querySelectorAll('.nav-dot');
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === this.currentIndex);
+        });
+    }
+
+    /* --- Update Page Number --- */
+    updatePageNumber() {
+        const el = document.getElementById('pageNumber');
+        if (el) {
+            el.textContent = (this.currentIndex + 1) + ' / ' + this.slides.length;
+        }
+    }
+
+    /* --- Inject Speaker Info from SPEAKER global --- */
+    injectSpeakerInfo() {
+        if (typeof SPEAKER === 'undefined') return;
+
+        const parts = [];
+        if (SPEAKER.name) parts.push(SPEAKER.name);
+        if (SPEAKER.company && SPEAKER.title) parts.push(SPEAKER.company + ' ' + SPEAKER.title);
+        else if (SPEAKER.company) parts.push(SPEAKER.company);
+        else if (SPEAKER.title) parts.push(SPEAKER.title);
+        const text = parts.join(', ');
+
+        document.querySelectorAll('.speaker-info').forEach(el => {
+            if (text) el.textContent = text;
+        });
+    }
+}
+
+/* --- Initialize on DOM ready --- */
+document.addEventListener('DOMContentLoaded', () => {
+    new SlidePresentation();
+});
+</script>
+
+<!-- === LUCIDE ICON INITIALIZATION === -->
+<script>
+if (typeof lucide !== 'undefined') lucide.createIcons();
+</script>
+
+</body>
+</html>
