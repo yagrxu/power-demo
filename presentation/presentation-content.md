@@ -226,20 +226,67 @@ Continuous improvement through monthly variance reviews:
 
 ---
 
-## Slide 13: What We Built
+## Slide 13: Run Results — Validation Test (Mar 31, 2026)
+
+Source: [examples/forecast-vs-actual-test-report.md](https://github.com/yagrxu/power-demo/blob/main/examples/forecast-vs-actual-test-report.md)
+
+Targeted test — 3 high-cost services, Feb estimate vs Mar actual:
+
+| Service | Estimated | Actual | Variance | Status |
+|---------|-----------|--------|----------|--------|
+| OpenSearch | $1,100 | $1,163 | +5.7% | ✅ OK |
+| CloudWatch | $500 | $520 | +4.0% | ✅ OK |
+| EC2 Compute | $700 | $705 | +0.7% | ✅ OK |
+
+| Metric | Value |
+|--------|-------|
+| Total Estimated | $2,300 |
+| Total Actual | $2,388 |
+| Estimate Accuracy | 96.3% |
+
+---
+
+## Slide 14: Run Results — Full Account Analysis (Apr 2, 2026)
+
+Source: [examples/forecast-vs-actual-2026-04-02.md](https://github.com/yagrxu/power-demo/blob/main/examples/forecast-vs-actual-2026-04-02.md)
+
+Full account — 31 services, Feb baseline vs Mar actual:
+
+| Metric | Value |
+|--------|-------|
+| Total Estimated (Feb) | $6,479 |
+| Total Actual (Mar) | $7,394 |
+| Total Variance | +$915 (+14.1%) |
+| Estimate Accuracy | 87.6% |
+| Anomalies Detected | 0 |
+
+Top INVESTIGATE items:
+
+| Service | Variance | % | Driver |
+|---------|----------|---|--------|
+| Bedrock AgentCore | +$510 | +400% | Agent workload scaling |
+| Redshift | +$196 | +26% | Cluster scaling |
+| Bedrock Service | +$181 | +559% | Model usage growth |
+| CloudTrail | +$120 | +104% | Increased API activity |
+
+17 of 31 services stayed within ≤10% tolerance.
+
+---
+
+## Slide 15: What We Built
 
 | Artifact | Description |
 |----------|-------------|
 | `steering/forecast-vs-actual.md` | New steering file — full 4-phase workflow |
 | `POWER.md` updates | Added steering reference + 4 new keywords |
 | `steering/tool-selection-guide.md` | Added query patterns + workflow combination |
-| `forecast-vs-actual-test-report.md` | Validation report with live test results |
+| 2 run reports in `examples/` | Live validation with real AWS account data |
 
 Key finding: No new MCP servers required.
 
 ---
 
-## Slide 14: Long-Term Roadmap — Where This Power Can Go
+## Slide 16: Long-Term Roadmap — Where This Power Can Go
 
 ### Phase 1: Foundation (Current — Delivered)
 What we have today:
@@ -268,7 +315,7 @@ What we have today:
 
 ---
 
-## Slide 15: Potential New MCP Servers & Capabilities
+## Slide 17: Potential New MCP Servers & Capabilities
 
 | Potential MCP Server | What It Enables |
 |---------------------|----------------|
@@ -282,7 +329,7 @@ These would extend the power from analysis and recommendations into governance a
 
 ---
 
-## Slide 16: Potential New Steering Files
+## Slide 18: Potential New Steering Files
 
 | Steering File | Scenario |
 |--------------|----------|
@@ -295,7 +342,19 @@ These would extend the power from analysis and recommendations into governance a
 
 ---
 
-## Slide 17: Key Takeaway
+## Slide 19: Resources
+
+| Resource | Link |
+|----------|------|
+| Git Repository | [github.com/yagrxu/power-demo](https://github.com/yagrxu/power-demo) |
+| Run Results | `examples/forecast-vs-actual-test-report.md`, `examples/forecast-vs-actual-2026-04-02.md` |
+| Forecast vs Actual Workflow | `skill/aws-cost-optimization/workflows/forecast-vs-actual.md` |
+| Power Definition | `power/aws-cost-optimization/POWER.md` |
+| Skill Definition | `skill/aws-cost-optimization/SKILL.md` |
+
+---
+
+## Slide 20: Key Takeaway
 
 The AWS Cost Optimization Power turns cost management from a monthly bill review into a continuous development practice.
 
